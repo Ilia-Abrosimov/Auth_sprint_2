@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  postgres_auth:
+    ports:
+      - "5432:5432"
+
+  redis_auth:
+    ports:
+      - "6379:6379"
+
+  auth_flask:
+    ports:
+      - "5000:5000"
+
+  postgres_test:
+    image: postgres:13.0-alpine
+    environment:
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_DB=${DB_TEST_NAME}
+    ports:
+      - "5442:5432"
