@@ -19,6 +19,7 @@ class UserSchema(ma.SQLAlchemyAutoSchema):
         load_only = ('password_hash',)
         unknown = EXCLUDE
         load_instance = True
+
     password = auto_field("password_hash")
 
 
@@ -41,8 +42,17 @@ class LoginHistorySchema(ma.SQLAlchemyAutoSchema):
         exclude = ('id', 'user_id')
 
 
+class UserRoleSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = User
+        exclude = ('email', 'is_active', 'date_joined', 'login_history', 'profile', 'password_hash')
+        unknown = EXCLUDE
+        load_instance = True
+
+
 profile_schema = ProfileSchema()
 user_schema = UserSchema()
 user_profile_schema = UserProfileSchema()
 password_schema = PasswordSchema()
 login_history_schema = LoginHistorySchema()
+user_role_schema = UserRoleSchema()
