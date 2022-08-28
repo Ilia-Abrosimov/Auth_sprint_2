@@ -1,0 +1,474 @@
+openapi: 3.0.0
+info:
+  title: Movies ListApi
+  version: v1
+servers:
+  - url: http://127.0.0.1:9000
+paths:
+  /api/v1/films/:
+    get:
+      description: "Возвращает список фильмов, отсортированных по полю `imdb_rating` (по возрастанию/по убыванию) и фильтрует по id жанра, указанного в поле `filter[genre]`:"
+      parameters:
+        - name: filter[genre]
+          in: query
+          description: Фильтрация по жанру
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: sort_string
+          in: query
+          description: Сортировка по рейтингу
+          required: false
+          schema:
+            type: string
+            default: -imdb_rating
+        - name: page[size]
+          in: query
+          description: Количество элеменнтов на странице
+          required: false
+          schema:
+            type: integer
+            default: 50
+        - name: page[number]
+          in: query
+          description: Номер страницы
+          required: false
+          schema:
+            type: integer
+            default: 1
+      responses:
+        "200":
+          description: 'Возвращает список фильмов с полями `id`, `title`, `imdb_rating`'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FilmReviewList"
+        '422':
+          description: "Validation Error"
+          content: 
+            application/json: 
+              schema: 
+                $ref: "#/components/schemas/ValidationError"
+      summary: "Get Films"
+      tags: 
+        - Films
+  
+  /api/v1/films/search/:
+    get:
+      description: Поиск по фильмам с сортировкой по полю `imdb_rating` (по возрастанию/по убыванию)
+      parameters:
+        - name: query
+          in: query
+          description: Поисковый запрос
+          required: true
+          schema:
+            type: string
+        - name: sort_string
+          in: query
+          description: Сортировка по рейтингу
+          required: false
+          schema:
+            type: string
+            default: -imdb_rating
+        - name: page[size]
+          in: query
+          description: Количество элеменнтов на странице
+          required: false
+          schema:
+            type: integer
+            default: 50
+        - name: page[number]
+          in: query
+          description: Номер страницы
+          required: false
+          schema:
+            type: integer
+            default: 1
+      responses:
+        "200":
+          description: 'Возвращает список фильмов с полями `id`, `title`, `imdb_rating`'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FilmReviewList"
+        '422':
+          description: "Validation Error"
+          content: 
+            application/json: 
+              schema: 
+                $ref: "#/components/schemas/ValidationError"
+      summary: "Search Films"
+      tags: 
+        - Films
+  
+  /api/v1/films/{film_id}/:
+    get:
+      description: "Возвращает информацию о фильме"
+      parameters:
+        - in: path
+          name: film_id  
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID кинопроизведения
+      responses:
+        "200":
+          description: "Возвращает информацию о фильме"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Movie"
+        '422':
+          description: "Validation Error"
+          content: 
+            application/json: 
+              schema: 
+                $ref: "#/components/schemas/ValidationError"
+      summary: "Film Details"
+      tags: 
+        - Films
+  /api/v1/genres/:
+    get:
+      description: Возвращает список жанров
+      parameters:
+        - name: page[size]
+          in: query
+          description: Количество элеменнтов на странице
+          required: false
+          schema:
+            type: integer
+            default: 50
+        - name: page[number]
+          in: query
+          description: Номер страницы
+          required: false
+          schema:
+            type: integer
+            default: 1
+      responses:
+        "200":
+          description: 'Возвращает список фильмов с полями `id`, `title`, `imdb_rating`'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Genre"
+        '422':
+          description: "Validation Error"
+          content: 
+            application/json: 
+              schema: 
+                $ref: "#/components/schemas/ValidationError"
+      summary: "Get Genres"
+      tags: 
+        - Genres
+  /api/v1/genres/{genre_id}/:
+    get:
+      description: "Возвращает информацию о жанре"
+      parameters:
+        - in: path
+          name: genre_id  
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID жанра
+      responses:
+        "200":
+          description: "Возвращает информацию о фильме"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Genre"
+        '422':
+          description: "Validation Error"
+          content: 
+            application/json: 
+              schema: 
+                $ref: "#/components/schemas/ValidationError"
+      summary: "Genre Details"
+      tags: 
+        - Genres
+  /api/v1/persons/search/:
+    get:
+      description: Поиск по персонам
+      parameters:
+        - name: query
+          in: query
+          description: Поисковый запрос
+          required: true
+          schema:
+            type: string
+        - name: page[size]
+          in: query
+          description: Количество элеменнтов на странице
+          required: false
+          schema:
+            type: integer
+            default: 50
+        - name: page[number]
+          in: query
+          description: Номер страницы
+          required: false
+          schema:
+            type: integer
+            default: 1
+      responses:
+        "200":
+          description: 'Возвращает список персон с полями `id`, `name`, `role`, `film_ids` '
+          content: 
+            application/json: 
+              schema: 
+                $ref: "#/components/schemas/PersonList"
+        '422':
+          description: "Validation Error"
+          content: 
+            application/json: 
+              schema: 
+                $ref: "#/components/schemas/ValidationError"
+      summary: "Search Persons"
+      tags: 
+        - Persons
+  /api/v1/persons/{person_id}/:
+    get:
+      description: "Возвращает информацию о персоне"
+      parameters:
+        - in: path
+          name: person_id  
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID человека
+      responses:
+        "200":
+          description: "Возвращает информацию о персоне"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PersonList"
+        '422':
+          description: "Validation Error"
+          content: 
+            application/json: 
+              schema: 
+                $ref: "#/components/schemas/ValidationError"
+      summary: "Person Details"
+      tags: 
+        - Persons
+  /api/v1/persons/{person_id}/film/:
+    get:
+      description: "Получение списка всех фильмов, в которых принимал участие человек"
+      parameters:
+        - in: path
+          name: person_id  
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID человека
+        - name: page[size]
+          in: query
+          description: Количество элеменнтов на странице
+          required: false
+          schema:
+            type: integer
+            default: 50
+        - name: page[number]
+          in: query
+          description: Номер страницы
+          required: false
+          schema:
+            type: integer
+            default: 1
+      responses:
+        "200":
+          description: "Получение списка всех фильмов, в которых принимал участие человек"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FilmReviewList"
+        '422':
+          description: "Validation Error"
+          content: 
+            application/json: 
+              schema: 
+                $ref: "#/components/schemas/ValidationError"
+      summary: "Person Films"
+      tags: 
+        - Persons
+components:
+  schemas:
+    Movie:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: ID
+        title:
+          type: string
+          description: Название 
+          example: Crescent Star
+        description:
+          type: string
+          description: Описание  
+          example: In 1944, the Germans began rounding up the Jews of Rhodes.
+        imdb_rating:
+          type: number
+          format: float
+          description: Рейтинг
+          example: 7.9
+        actors:
+          type: array
+          items:
+            $ref: "#/components/schemas/Person"
+        actors_names:
+          type: array
+          description: Список актёров
+          example: [Darrell Geer, Michael Bond]
+          items:
+            type: string
+            description: Имя актёра
+        director:
+          type: array
+          description: Список режиссеров
+          example: [George Lucas]
+          items:
+            type: string
+            description: Имя режиссера
+        genre:
+          type: array
+          description: Список жанров
+          example: [Drama, Short]
+          items:
+            type: string
+            description: Название жанра
+        writers:
+          type: array
+          items:
+            $ref: "#/components/schemas/Person"
+        writers_names:
+          type: array
+          description: Список сценаристов
+          example: [Turgut Turk Adiguzel]
+          items:
+            type: string
+            description: Имя сценариста
+            example: Turgut Turk Adiguzel   
+      required:
+        - id
+        - title
+    FilmReviewList:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: ID 
+        title:
+          type: string
+          description: Название 
+          example: 'Star Wars: Knights of the Old Republic'
+        imdb_rating:
+          type: number
+          format: float
+          description: Рейтинг
+          example: 7.9
+      required:
+      - id
+      - title
+      - imdb_rating
+    Person:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: ID
+        name:
+          type: string
+          description: Имя
+    PersonList: 
+      items: 
+        $ref: "#/components/schemas/models__person__Person"
+      title: PersonList
+      type: array
+    models__person__Person: 
+      properties: 
+        id: 
+          title: Id
+          type: string
+          example: 26e83050-29ef-4163-a99d-b546cac208f8
+        name: 
+          title: Name
+          type: string
+          example: Ewan Gordon McGregor
+        role: 
+          items: 
+            type: string
+            example: actor
+          title: Role
+          type: array
+        film_ids: 
+          items: 
+            type: string
+            example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+          title: "Film Ids"
+          type: array
+      required: 
+        - id
+        - name
+        - role
+        - film_ids
+      title: Person
+      type: object
+    Genre:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: ID
+        name:
+          type: string
+          description: Название жанра
+          example: Comedy
+    ValidationError: 
+      properties: 
+        loc: 
+          items: 
+            anyOf: 
+              - 
+                type: string
+              - 
+                type: integer
+          title: Location
+          type: array
+        msg: 
+          title: Message
+          type: string
+        type: 
+          title: "Error Type"
+          type: string
+      required: 
+        - loc
+        - msg
+        - type
+      title: ValidationError
+      type: object
+  responses:
+    ValidationError:
+      description: The specified resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationError'
+          
