@@ -34,9 +34,17 @@ cd auth_flask_app && python -m pytest
 Для создания нового пользователя superuser можно воспользоваться cli-командой:
 
 ```bash
-python -m flask create superuser user_email@mail.com password
+python -m flask create superuser dahasolo@gmail.com password
 ```
 ------
+
+## Интеграция с другими сервисами
+
+Для создания сети `auth_network`
+
+```bash
+docker network create auth_network
+```
 
 
 # Проектная работа 7 спринта

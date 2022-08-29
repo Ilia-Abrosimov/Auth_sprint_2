@@ -43,17 +43,25 @@ services:
     command: gunicorn --bind 0.0.0.0:5000 wsgi_app:app
 
   nginx:
+    hostname: nginx_auth
     image: nginx:latest
     volumes:
       - static_volume:/data/static/:ro
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx/sites.conf:/etc/nginx/conf.d/default.conf
     ports:
-      - "80:80"
+      - "50:80"
     depends_on:
       - auth_flask
+    networks:
+      - default
+      - auth_network
 
 volumes:
   postgres_auth:
   redis_auth:
   static_volume:
+
+networks:
+  auth_network:
+    external: true

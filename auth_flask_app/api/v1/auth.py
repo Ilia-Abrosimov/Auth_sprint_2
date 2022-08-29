@@ -1,6 +1,7 @@
 from datetime import timedelta
 from http import HTTPStatus
 
+import crud
 import jwt as decode_jwt
 from api.messages import message
 from core.config import settings
@@ -10,7 +11,8 @@ from extensions import jwt
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import create_access_token, create_refresh_token, get_jwt, get_jwt_identity, jwt_required
 from marshmallow import ValidationError
-from schemas.auth import login_history_schema, password_schema, profile_schema, user_profile_schema, user_schema
+from schemas.auth import (login_history_schema, password_schema, profile_schema, user_profile_schema, user_role_schema,
+                          user_schema)
 
 auth = Blueprint('auth', __name__, url_prefix='/api/v1/auth')
 
@@ -175,6 +177,42 @@ def get_login_history(user_id):
                        total_pages=histories.pages)
     response.status_code = HTTPStatus.OK
     return response
+
+
+@auth.route("/verify-jwt", methods=['GET'])
+@jwt_required()
+def verify_jwt():
+    """Получение параметров доступа пользователя.
+    ---
+    tags:
+      - auth
+    definitions:
+      VerifyJWT:
+        type: object
+        properties:
+          id:
+            type: string
+            example: 9c2da540-3535-4597-b6f6-bb3e1a385e65
+          is_superuser:
+            type: boolean
+            example: false
+          role:
+            type: string
+            example: user
+    responses:
+      200:
+        description: "Successful operation"
+        schema:
+          $ref: '#/definitions/VerifyJWT'
+    """
+    result = user_role_schema.dump(crud.user.get(get_jwt_identity()))
+    role_id = crud.user.get_role_id(get_jwt_identity(), mute=True)
+    # TODO: определить роль с минимальными правами доступа
+    if role_id:
+        result['role'] = crud.role.get(role_id).name
+    else:
+        result['role'] = ''
+    return result
 
 
 @auth.route("/hello", methods=["GET"])

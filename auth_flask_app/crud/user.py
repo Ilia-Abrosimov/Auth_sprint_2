@@ -31,7 +31,7 @@ class UserCRUD(BaseCRUD[User, UserSchema, UserSchema]):
         db.session.add(db_obj)
         db.session.commit()
 
-    def has_role(self, user_id: str, role_id: str, mute=False) -> bool:
+    def get_role_id(self, user_id: str, mute=False):
         db_obj = self.get(user_id)
         user_role = db_obj.role.first()
         if not user_role:
@@ -39,6 +39,10 @@ class UserCRUD(BaseCRUD[User, UserSchema, UserSchema]):
                 return False
             abort(make_response(jsonify(message=message('obj_not_role', db_obj)), HTTPStatus.CONFLICT))
         user_role_id = user_role.role_id
+        return user_role_id
+
+    def has_role(self, user_id: str, role_id: str, mute=False) -> bool:
+        user_role_id = self.get_role_id(user_id, mute)
         role.get(role_id)
         return user_role_id == role_id
 

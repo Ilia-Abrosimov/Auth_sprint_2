@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  elastic-test:
+    image: elasticsearch:7.17.0
+    environment:
+      - "ES_JAVA_OPTS=-Xms200m -Xmx200m"
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    volumes:
+      - test-elasticsearch-data:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+
+  redis-test:
+    image: redis:6.2-alpine
+    restart: always
+    volumes:
+      - test-redis:/data
+    command:
+      - sh
+      - -c
+      - redis-server --appendonly yes --maxmemory 450000000 --maxmemory-policy volatile-lru
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+    networks:
+      - default
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+    ports:
+      - "6379:6379"
+
+  movies-api-test:
+    build:
+      context: ../../src
+      dockerfile: Dockerfile
+    restart: always
+    depends_on:
+      - redis-test
+      - elastic-test
+    env_file:
+      - .tests.env
+    ports:
+      - "9000:9000"
+
+  tests:
+    build:
+      context: .
+    entrypoint: >
+      sh -c "python3 -m tests.functional.utils.wait_for_es
+      && python3 -m tests.functional.utils.wait_for_redis
+      && pytest tests/functional/src"
+    env_file:
+      - .tests.env
+    depends_on:
+      - redis-test
+      - elastic-test
+      - movies-api-test
+
+
+volumes:
+  test-elasticsearch-data:
+  test-redis:
