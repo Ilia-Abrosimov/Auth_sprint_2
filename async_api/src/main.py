@@ -9,6 +9,7 @@ from db import elastic, redis
 from elasticsearch import AsyncElasticsearch
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
+from loguru import logger
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -20,6 +21,7 @@ app = FastAPI(
 
 @app.on_event('startup')
 async def startup():
+    logger.debug(settings)
     redis.redis = await aioredis.create_redis_pool((settings.REDIS_HOST,
                                                     settings.REDIS_PORT),
                                                    minsize=10,

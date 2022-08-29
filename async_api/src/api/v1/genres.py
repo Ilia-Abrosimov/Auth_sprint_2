@@ -1,5 +1,6 @@
 from api.utils import Paginator, cache, key_builder
 from api.utils.errors import NotFoundException
+from api.utils.utils import UserAuthModel, get_current_user
 from core.config import settings
 from fastapi import APIRouter, Depends
 from models.genre import Genre, GenreList
@@ -14,9 +15,12 @@ router = APIRouter()
        key_builder=key_builder('paginator'),
        response_model=GenreList)
 async def genres(
-    paginator: Paginator = Depends(), genre_service: GenreService = Depends(get_genre_service),
+        paginator: Paginator = Depends(),
+        genre_service: GenreService = Depends(get_genre_service),
+        current_user: UserAuthModel = Depends(get_current_user)
 ):
     """Возвращает список жанров."""
+    # TODO: определить права доступа к ручкам, например, if current_user.role == 'admin' or current_user.is_superuser:
     return await genre_service.get_many(paginator)
 
 

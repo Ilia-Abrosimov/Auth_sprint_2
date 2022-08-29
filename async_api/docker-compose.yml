@@ -52,8 +52,6 @@ services:
       - redis-server --appendonly yes --maxmemory 450000000 --maxmemory-policy volatile-lru
     healthcheck:
       test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
-    networks:
-      - default
     deploy:
       resources:
         limits:
@@ -69,6 +67,9 @@ services:
       - elastic
     env_file:
       - .env
+    networks:
+      - default
+      - auth_network
 
   admin-panel:
     image: irabrosimov/admin_panel:v1
@@ -85,12 +86,17 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx/sites.conf:/etc/nginx/conf.d/default.conf
     ports:
-      - 80:80
+      - "80:80"
     depends_on:
       - admin-panel
+      - movies-api
 
 volumes:
   postgres_data:
   elasticsearch-data:
   static_volume:
   redis:
+
+networks:
+  auth_network:
+    external: true

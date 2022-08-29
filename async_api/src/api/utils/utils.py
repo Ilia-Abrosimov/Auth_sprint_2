@@ -1,9 +1,19 @@
 import dataclasses
 import re
 from enum import Enum
+from http import HTTPStatus
 
+import requests
+from core.config import settings
 from fastapi.params import Query
-from pydantic import BaseModel, PositiveInt
+from fastapi.requests import Request
+from pydantic import BaseModel, PositiveInt, parse_obj_as
+
+
+class UserAuthModel(BaseModel):
+    id: str
+    is_superuser: bool
+    role: str
 
 
 @dataclasses.dataclass
@@ -34,3 +44,15 @@ class SortBy(str, Enum):
 def parse_sort_dependency(sort_string: SortBy = SortBy.DESC) -> SortFilmModel:
     order, by = re.findall(re.compile('(-?)(\w+)'), sort_string)[0]
     return SortFilmModel(order='DESC' if order else 'ASC', by=by)
+
+
+async def get_current_user(request: Request) -> UserAuthModel:
+    """
+    Получаем параметры доступа из AUTH
+    """
+    ret = requests.get(f'http://{settings.AUTH_HOST}:{settings.AUTH_PORT}/api/v1/auth/verify-jwt',
+                       headers=request.headers, timeout=2)
+    if ret.ok:
+        return parse_obj_as(UserAuthModel, ret.json())
+    if ret.status_code == HTTPStatus.UNAUTHORIZED:
+        ...

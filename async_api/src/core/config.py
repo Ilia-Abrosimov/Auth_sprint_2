@@ -14,6 +14,8 @@ class Settings(BaseSettings):
     ELASTIC_PORT: int = 9200
     FILM_CACHE_EXPIRE_IN_SECONDS = 60 * 5
     DEFAULT_CACHE_TTL = 60 * 5
+    AUTH_HOST: str = 'localhost'
+    AUTH_PORT: int = 50
 
     class Config:
         env_file = '.env'
