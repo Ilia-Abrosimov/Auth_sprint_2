@@ -16,7 +16,7 @@ class UserSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = User
         exclude = ('is_active', 'is_superuser', 'date_joined', 'login_history', 'role', 'profile', 'password_hash')
-        load_only = ('password_hash',)
+        load_only = ('password',)
         unknown = EXCLUDE
         load_instance = True
 
