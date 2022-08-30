@@ -2,17 +2,18 @@ from datetime import timedelta
 from http import HTTPStatus
 
 import crud
-import jwt as decode_jwt
 from api.messages import message
 from core.config import settings
 from db.db import db, redis_db
 from db.db_models import LoginHistory, Profile, User
 from extensions import jwt
 from flask import Blueprint, jsonify, request
-from flask_jwt_extended import create_access_token, create_refresh_token, get_jwt, get_jwt_identity, jwt_required
+from flask_jwt_extended import get_jwt, get_jwt_identity, jwt_required
 from marshmallow import ValidationError
 from schemas.auth import (login_history_schema, password_schema, profile_schema, user_profile_schema, user_role_schema,
                           user_schema)
+
+from .utils import generate_tokens
 
 auth = Blueprint('auth', __name__, url_prefix='/api/v1/auth')
 
@@ -57,10 +58,7 @@ def login():
         response = jsonify(message=message('bad_auth_data', user_profile.get('email')))
         response.status_code = HTTPStatus.UNAUTHORIZED
         return response
-    access_token = create_access_token(identity=user.id)
-    decode_access_token = decode_jwt.decode(access_token, settings.JWT_SECRET_KEY, algorithms="HS256")
-    claims = {'at': decode_access_token['jti']}
-    refresh_token = create_refresh_token(identity=user.id, additional_claims=claims)
+    access_token, refresh_token = generate_tokens(user)
     response = jsonify(message=message('JWT_generated'),
                        tokens={'access_token': access_token, "refresh_token": refresh_token})
     response.status_code = HTTPStatus.OK
@@ -80,11 +78,9 @@ def check_if_token_is_revoked(jwt_header, jwt_payload: dict):
 @auth.route('/refresh-token', methods=['POST'])
 @jwt_required(refresh=True)
 def update_token():
-    user = get_jwt_identity()
-    access_token = create_access_token(identity=user)
-    decode_access_token = decode_jwt.decode(access_token, settings.JWT_SECRET_KEY, algorithms="HS256")
-    claims = {'at': decode_access_token['jti']}
-    refresh_token = create_refresh_token(identity=user, additional_claims=claims)
+    user_id = get_jwt_identity()
+    user = User.query.filter_by(id=user_id).first()
+    access_token, refresh_token = generate_tokens(user)
     response = jsonify(message=message('JWT_generated'),
                        tokens={'access_token': access_token, 'refresh_token': refresh_token})
     response.status_code = HTTPStatus.OK
