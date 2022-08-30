@@ -1,4 +1,5 @@
 from api.v1.auth import auth
+from api.v1.ouath.google import oauth_google
 from api.v1.ouath.yandex import oauth_yandex
 from api.v1.role import role_bp
 from api.v1.user import user_bp
@@ -20,6 +21,7 @@ app.register_blueprint(auth)
 app.register_blueprint(role_bp)
 app.register_blueprint(user_bp)
 app.register_blueprint(oauth_yandex)
+app.register_blueprint(oauth_google)
 app.register_blueprint(cli_bp)
 Swagger(app)
 

@@ -19,6 +19,8 @@ class Settings(BaseSettings):
     SESSION_SECRET: str = 'secret'
     YANDEX_CLIENT_ID: str = 'secret'
     YANDEX_CLIENT_SECRET: str = 'secret'
+    GOOGLE_CLIENT_ID: str = 'secret'
+    GOOGLE_CLIENT_SECRET: str = 'secret'
 
     class Config:
         env_file = '.env'
