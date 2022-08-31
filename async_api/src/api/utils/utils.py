@@ -4,6 +4,7 @@ from enum import Enum
 from http import HTTPStatus
 
 import requests
+from api.utils.errors import AccessError, UnauthorizedError
 from core.config import settings
 from fastapi.params import Query
 from fastapi.requests import Request
@@ -47,12 +48,19 @@ def parse_sort_dependency(sort_string: SortBy = SortBy.DESC) -> SortFilmModel:
 
 
 async def get_current_user(request: Request) -> UserAuthModel:
-    """
-    Получаем параметры доступа из AUTH
-    """
-    ret = requests.get(f'http://{settings.AUTH_HOST}:{settings.AUTH_PORT}/api/v1/auth/verify-jwt',
-                       headers=request.headers, timeout=2)
+    """Получаем параметры доступа из AUTH"""
+    ret = requests.get(
+        f'http://{settings.AUTH_HOST}:{settings.AUTH_PORT}/api/v1/auth/verify-jwt', headers=request.headers, timeout=2
+    )
     if ret.ok:
         return parse_obj_as(UserAuthModel, ret.json())
     if ret.status_code == HTTPStatus.UNAUTHORIZED:
-        ...
+        raise UnauthorizedError
+
+
+async def get_admin(request: Request) -> UserAuthModel:
+    current_user = await get_current_user(request)
+    if current_user.is_superuser or current_user.role == 'admin':
+        return current_user
+    else:
+        raise AccessError(role='admin')

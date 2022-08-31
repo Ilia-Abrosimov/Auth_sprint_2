@@ -2,6 +2,7 @@ from typing import Optional
 
 from api.utils import Paginator, SortFilmModel, cache, key_builder, parse_sort_dependency
 from api.utils.errors import NotFoundException
+from api.utils.utils import UserAuthModel, get_current_user
 from core.config import settings
 from fastapi import APIRouter, Depends
 from fastapi.params import Query
@@ -42,6 +43,7 @@ async def get_films(
     paginator: Paginator = Depends(),
     filter_: Optional[UUID4] = Query(None, alias='filter[genre]'),
     film_service: FilmService = Depends(get_film_service),
+    current_user: UserAuthModel = Depends(get_current_user),
 ):
     """
     Возвращает список фильмов, отсортированных по полю `imdb_rating` (по возрастанию/по убыванию)
@@ -80,6 +82,7 @@ async def search_films(
     sort: SortFilmModel = Depends(parse_sort_dependency),
     paginator: Paginator = Depends(),
     film_service: FilmService = Depends(get_film_service),
+    current_user: UserAuthModel = Depends(get_current_user),
 ):
     """
     Поиск по фильмам с сортировкой по полю `imdb_rating` (по возрастанию/по убыванию).
@@ -90,7 +93,11 @@ async def search_films(
 
 
 @router.get('/{film_id}', response_model=Film)
-async def film_details(film_id: UUID4, film_service: FilmService = Depends(get_film_service)) -> Film:
+async def film_details(
+    film_id: UUID4,
+    film_service: FilmService = Depends(get_film_service),
+    current_user: UserAuthModel = Depends(get_current_user),
+) -> Film:
     film = await film_service.get_by_id(film_id)
     if not film:
         raise NotFoundException(model=Film, item_id=film_id)

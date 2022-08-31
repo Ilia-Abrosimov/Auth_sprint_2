@@ -203,11 +203,10 @@ def verify_jwt():
     """
     result = user_role_schema.dump(crud.user.get(get_jwt_identity()))
     role_id = crud.user.get_role_id(get_jwt_identity(), mute=True)
-    # TODO: определить роль с минимальными правами доступа
     if role_id:
         result['role'] = crud.role.get(role_id).name
     else:
-        result['role'] = ''
+        result['role'] = 'user'
     return result
 
 
