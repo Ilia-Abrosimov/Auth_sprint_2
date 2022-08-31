@@ -57,6 +57,14 @@ services:
       - default
       - auth_network
 
+  jaeger:
+    image: jaegertracing/all-in-one
+    ports:
+      - ${JAEGER_UDP}:${JAEGER_UDP}/udp
+      - ${JAEGER}:${JAEGER}
+    depends_on:
+      - nginx
+
 volumes:
   postgres_auth:
   redis_auth:
