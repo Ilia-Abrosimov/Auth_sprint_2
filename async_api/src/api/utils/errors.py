@@ -18,5 +18,10 @@ class UnauthorizedError(HTTPException):
 
 
 class AccessError(HTTPException):
-    def __init__(self, role) -> None:
+    def __init__(self, role: str) -> None:
         super().__init__(status_code=HTTPStatus.FORBIDDEN, detail=f'For {role} only')
+
+
+class AuthResponseError(HTTPException):
+    def __init__(self, message: str = 'Auth response error') -> None:
+        super().__init__(status_code=HTTPStatus.NOT_FOUND, detail=message)
