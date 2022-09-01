@@ -5,7 +5,7 @@ from api.v1.role import role_bp
 from api.v1.user import user_bp
 from cli.commands import cli_bp
 from core.config import settings
-from core.jaeger import configure_tracer
+# from core.jaeger import configure_tracer
 from db.db import db, init_db
 from extensions import jwt, ma, migrate, oauth
 from flasgger import Swagger
@@ -26,7 +26,7 @@ app.register_blueprint(oauth_yandex)
 app.register_blueprint(oauth_google)
 app.register_blueprint(cli_bp)
 Swagger(app)
-configure_tracer()
+# configure_tracer()
 FlaskInstrumentor().instrument_app(app)
 
 
