@@ -21,6 +21,8 @@ class Settings(BaseSettings):
     YANDEX_CLIENT_SECRET: str = 'secret'
     GOOGLE_CLIENT_ID: str = 'secret'
     GOOGLE_CLIENT_SECRET: str = 'secret'
+    JAEGER_UDP: int = 6831
+    JAEGER_HOST_NAME: str = 'jaeger'
 
     class Config:
         env_file = '.env'

@@ -2,6 +2,7 @@ from http import HTTPStatus
 from typing import Any, Generic, Optional, Type, TypeVar, Union
 
 from api.messages import message
+from core.jaeger import tracing
 from flask import abort, jsonify, make_response
 from flask_marshmallow import Schema
 from flask_sqlalchemy import Model, SQLAlchemy
@@ -22,17 +23,20 @@ class BaseCRUD(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         """
         self.model = model
 
+    @tracing
     def get(self, id_: Any) -> ModelType:
         result = self.model.query.filter_by(id=id_).first()
         if result:
             return result
         abort(make_response(jsonify(message=message('not_found_data', id_)), HTTPStatus.NOT_FOUND))
 
+    @tracing
     def get_multi(
             self, *, skip: int = 0, limit: int = 100
     ) -> list[ModelType]:
         return self.model.query.offset(skip).limit(limit).all()
 
+    @tracing
     def create(self, db: SQLAlchemy, *, obj_in: CreateSchemaType) -> Optional[ModelType]:
         try:
             db.session.add(obj_in)
@@ -42,6 +46,7 @@ class BaseCRUD(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         except IntegrityError:
             abort(make_response(jsonify(message=message('obj_exists', obj_in)), HTTPStatus.CONFLICT))
 
+    @tracing
     def update(
             self,
             db: SQLAlchemy,
@@ -64,6 +69,7 @@ class BaseCRUD(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         except IntegrityError:
             abort(make_response(jsonify(message=message('obj_not_update', obj_in)), HTTPStatus.CONFLICT))
 
+    @tracing
     def remove(self, db: SQLAlchemy, *, id_: Any) -> None:
         obj = self.get(id_)
         db.session.delete(obj)
