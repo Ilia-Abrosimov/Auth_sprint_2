@@ -77,16 +77,28 @@ class UsersRoles(db.Model):
         return f'<Role {self.role_id} for user {self.user_id}>'
 
 
+def create_partition(target, connection, **kw) -> None:
+    connection.execute(
+        """CREATE TABLE IF NOT EXISTS "social_account_yandex" PARTITION OF "social_account" FOR VALUES IN ('yandex')"""
+    )
+    connection.execute(
+        """CREATE TABLE IF NOT EXISTS "social_account_google" PARTITION OF "social_account" FOR VALUES IN ('google')"""
+    )
+
+
 class SocialAccount(db.Model):
     tablename = 'social_account'
+    table_args = (db.UniqueConstraint('social_id', 'social_name', name='social_pk'),
+                  {
+                      'postgresql_partition_by': 'LIST (social_name)',
+                      'listeners': [('after_create', create_partition)],
+                  })
 
     id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id = db.Column(UUID(as_uuid=True), db.ForeignKey('user.id'), nullable=False)
 
     social_id = db.Column(db.Text, nullable=False)
     social_name = db.Column(db.Text, nullable=False)
-
-    table_args = (db.UniqueConstraint('social_id', 'social_name', name='social_pk'),)
 
     def repr(self):
         return f'<SocialAccount {self.social_name}:{self.user_id}>'

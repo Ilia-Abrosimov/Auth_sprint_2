@@ -1,8 +1,8 @@
 """Initial migration
 
-Revision ID: 66d5c42b2e57
+Revision ID: 6883623fa6f0
 Revises: 
-Create Date: 2022-08-30 16:20:52.806369
+Create Date: 2022-09-01 22:54:15.701166
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = '66d5c42b2e57'
+revision = '6883623fa6f0'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -59,8 +59,12 @@ def upgrade():
     sa.Column('social_id', sa.Text(), nullable=False),
     sa.Column('social_name', sa.Text(), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id', 'social_name'),
+    sa.UniqueConstraint('id', 'social_name'),
+    postgresql_partition_by='LIST (social_name)'
     )
+    op.execute("""CREATE TABLE IF NOT EXISTS "social_account_yandex" PARTITION OF "social_account" FOR VALUES IN ('yandex')""")
+    op.execute("""CREATE TABLE IF NOT EXISTS "social_account_google" PARTITION OF "social_account" FOR VALUES IN ('google')""")
     op.create_table('usersroles',
     sa.Column('id', postgresql.UUID(as_uuid=True), nullable=False),
     sa.Column('user_id', postgresql.UUID(as_uuid=True), nullable=True),
