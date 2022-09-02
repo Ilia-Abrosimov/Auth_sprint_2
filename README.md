@@ -46,7 +46,7 @@ cd auth_flask_app && python -m pytest
 Для создания нового пользователя superuser можно воспользоваться cli-командой:
 
 ```bash
-python -m flask create superuser dahasolo@gmail.com password
+python -m flask create superuser example@mail.com password
 ```
 ## Вход через OAuth
 Выполняется из dev сборки
@@ -57,6 +57,11 @@ http://127.0.0.1:50/api/v1/oauth/yandex/login
 ## JAEGER UI 
 ````
 http://127.0.0.1:16686/
+````
+
+## Документация 
+````
+http://127.0.0.1:<port>/apidocs/
 ````
 
 # Проектная работа 7 спринта
