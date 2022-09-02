@@ -9,7 +9,6 @@ redis==4.3.4
 gunicorn==20.1.0
 flasgger==0.9.5
 pydantic[dotenv]==1.9.2
-Flask-Migrate==3.1.0
 flask-marshmallow==0.14.0
 marshmallow-sqlalchemy==0.28.1
 Authlib==1.0.1
