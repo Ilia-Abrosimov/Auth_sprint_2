@@ -1,3 +1,15 @@
+## Ссылка на репозиторий
+
+https://github.com/Ilia-Abrosimov/Auth_sprint_2
+
+## Интеграция с другими сервисами
+
+Для создания сети `auth_network`
+
+```bash
+docker network create auth_network
+```
+
 ## Запуск в режиме prod
 
 ```bash
@@ -36,16 +48,16 @@ cd auth_flask_app && python -m pytest
 ```bash
 python -m flask create superuser dahasolo@gmail.com password
 ```
-------
+## Вход через OAuth
+Выполняется из dev сборки
+````
+http://127.0.0.1:50/api/v1/oauth/yandex/login
+````
 
-## Интеграция с другими сервисами
-
-Для создания сети `auth_network`
-
-```bash
-docker network create auth_network
-```
-
+## JAEGER UI 
+````
+http://127.0.0.1:16686/
+````
 
 # Проектная работа 7 спринта
 
