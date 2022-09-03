@@ -23,6 +23,7 @@ class Settings(BaseSettings):
     GOOGLE_CLIENT_SECRET: str = 'secret'
     JAEGER_UDP: int = 6831
     JAEGER_HOST_NAME: str = 'jaeger'
+    REQUEST_LIMIT_PER_MINUTE: int = 20
 
     class Config:
         env_file = '.env'
