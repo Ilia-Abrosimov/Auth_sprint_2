@@ -30,3 +30,9 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+app_config = {
+    "DEBUG": True,
+    "CACHE_TYPE": "SimpleCache",
+    "CACHE_DEFAULT_TIMEOUT": 300
+}

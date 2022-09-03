@@ -7,7 +7,7 @@ from core.config import settings
 from core.rate_limit import rate_limit
 from db.db import db, redis_db
 from db.db_models import LoginHistory, Profile, User
-from extensions import jwt
+from extensions import cache, jwt
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import get_jwt, get_jwt_identity, jwt_required
 from marshmallow import ValidationError
@@ -186,6 +186,7 @@ def get_login_history(user_id):
 @auth.route("/verify-jwt", methods=['GET'])
 @jwt_required()
 @rate_limit
+@cache.cached(timeout=30, query_string=True)
 def verify_jwt():
     """Получение параметров доступа пользователя.
     ---

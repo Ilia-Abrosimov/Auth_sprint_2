@@ -10,7 +10,7 @@ from cli.commands import cli_bp
 from core.config import settings
 from core.swagger_config import swagger_config
 from db.db import db, init_db
-from extensions import jwt, ma, migrate, oauth
+from extensions import cache, jwt, ma, migrate, oauth
 from flasgger import Swagger
 from flask import Flask, abort, jsonify, make_response, request
 from opentelemetry.instrumentation.flask import FlaskInstrumentor
@@ -21,6 +21,7 @@ migrate.init_app(app, db)
 ma.init_app(app)
 jwt.init_app(app)
 oauth.init_app(app)
+cache.init_app(app)
 
 app.register_blueprint(auth)
 app.register_blueprint(role_bp)
