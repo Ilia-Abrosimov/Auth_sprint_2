@@ -19,8 +19,10 @@ class Settings(BaseSettings):
     SESSION_SECRET: str = 'secret'
     YANDEX_CLIENT_ID: str = 'secret'
     YANDEX_CLIENT_SECRET: str = 'secret'
+    YANDEX_AUTH_URL: str = 'secret'
     GOOGLE_CLIENT_ID: str = 'secret'
     GOOGLE_CLIENT_SECRET: str = 'secret'
+    GOOGLE_AUTH_URL: str = 'secret'
     JAEGER_UDP: int = 6831
     JAEGER_HOST_NAME: str = 'jaeger'
     REQUEST_LIMIT_PER_MINUTE: int = 20

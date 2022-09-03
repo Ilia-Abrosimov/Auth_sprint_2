@@ -7,7 +7,7 @@ oauth.register(
     name='yandex',
     client_id=settings.YANDEX_CLIENT_ID,
     client_secret=settings.YANDEX_CLIENT_SECRET,
-    access_token_url='https://oauth.yandex.ru/token',
+    access_token_url=settings.YANDEX_AUTH_URL,
     authorize_url='https://oauth.yandex.ru/authorize'
 )
 

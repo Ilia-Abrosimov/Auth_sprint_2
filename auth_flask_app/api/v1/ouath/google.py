@@ -3,10 +3,9 @@ from core.config import settings
 from extensions import oauth
 from flask import Blueprint, url_for
 
-CONF_URL = 'https://accounts.google.com/.well-known/openid-configuration'
 oauth.register(
     name='google',
-    server_metadata_url=CONF_URL,
+    server_metadata_url=settings.GOOGLE_AUTH_URL,
     client_id=settings.GOOGLE_CLIENT_ID,
     client_secret=settings.GOOGLE_CLIENT_SECRET,
     client_kwargs={
