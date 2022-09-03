@@ -2,6 +2,7 @@ from http import HTTPStatus
 
 import crud
 from api.messages import message
+from core.rate_limit import rate_limit
 from db.db import db
 from flask import Blueprint, Response, abort, jsonify, make_response, request
 from flask_jwt_extended import get_jwt_identity, jwt_required
@@ -13,6 +14,7 @@ role_bp = Blueprint('roles', __name__, url_prefix='/api/v1/roles')
 
 @role_bp.route('/', methods=['GET'])
 @jwt_required()
+@rate_limit
 def get_roles():
     """Получение списка всех ролей.
     ---
@@ -52,6 +54,7 @@ def get_roles():
 
 @role_bp.route('/<role_name>', methods=['GET'])
 @jwt_required()
+@rate_limit
 def get_role_by_name(role_name):
     """Получение роли по названию.
     ---
@@ -91,6 +94,7 @@ def get_role_by_name(role_name):
 
 @role_bp.route('/', methods=['POST'])
 @jwt_required()
+@rate_limit
 def create_role():
     """Создание роли.
     ---
@@ -132,6 +136,7 @@ def create_role():
 
 @role_bp.route('/<uuid:role_id>', methods=['DELETE'])
 @jwt_required()
+@rate_limit
 def remove_role(role_id):
     """Удаление роли.
     ---
@@ -156,6 +161,7 @@ def remove_role(role_id):
 
 @role_bp.route('/<uuid:role_id>', methods=['PATCH'])
 @jwt_required()
+@rate_limit
 def update_role(role_id):
     """Изменение роли.
     ---

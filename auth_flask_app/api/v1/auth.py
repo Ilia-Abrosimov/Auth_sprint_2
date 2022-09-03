@@ -4,6 +4,7 @@ from http import HTTPStatus
 import crud
 from api.messages import message
 from core.config import settings
+from core.rate_limit import rate_limit
 from db.db import db, redis_db
 from db.db_models import LoginHistory, Profile, User
 from extensions import jwt
@@ -19,6 +20,7 @@ auth = Blueprint('auth', __name__, url_prefix='/api/v1/auth')
 
 
 @auth.route('/signup', methods=['POST'])
+@rate_limit
 def signup():
     data = request.json
     try:
@@ -45,6 +47,7 @@ def signup():
 
 
 @auth.route('/login', methods=['POST'])
+@rate_limit
 def login():
     data = request.json
     try:
@@ -77,6 +80,7 @@ def check_if_token_is_revoked(jwt_header, jwt_payload: dict):
 
 @auth.route('/refresh-token', methods=['POST'])
 @jwt_required(refresh=True)
+@rate_limit
 def update_token():
     user_id = get_jwt_identity()
     user = User.query.filter_by(id=user_id).first()
@@ -93,6 +97,7 @@ def update_token():
 
 @auth.route("/logout", methods=['DELETE'])
 @jwt_required(refresh=True)
+@rate_limit
 def logout():
     jti = get_jwt()["jti"]
     at = get_jwt()["at"]
@@ -103,6 +108,7 @@ def logout():
 
 @auth.route("/password-change/<uuid:user_id>", methods=['PATCH'])
 @jwt_required()
+@rate_limit
 def change_password(user_id):
     data = request.json
     try:
@@ -132,6 +138,7 @@ def change_password(user_id):
 
 @auth.route("/profile-change/<uuid:profile_id>", methods=['PATCH'])
 @jwt_required()
+@rate_limit
 def change_profile(profile_id):
     try:
         profile_schema.load(request.json)
@@ -160,6 +167,7 @@ def change_profile(profile_id):
 
 @auth.route("/login-history/<uuid:user_id>", methods=['GET'])
 @jwt_required()
+@rate_limit
 def get_login_history(user_id):
     page = request.args.get('page', 1, type=int)
     histories = LoginHistory.query.filter_by(user_id=user_id).paginate(page=page, per_page=2)
@@ -177,6 +185,7 @@ def get_login_history(user_id):
 
 @auth.route("/verify-jwt", methods=['GET'])
 @jwt_required()
+@rate_limit
 def verify_jwt():
     """Получение параметров доступа пользователя.
     ---
@@ -212,5 +221,6 @@ def verify_jwt():
 
 @auth.route("/hello", methods=["GET"])
 @jwt_required()
+@rate_limit
 def hello():
     return 'Hello'

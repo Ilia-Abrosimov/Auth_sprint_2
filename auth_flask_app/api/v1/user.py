@@ -2,6 +2,7 @@ from http import HTTPStatus
 
 import crud
 from api.messages import message
+from core.rate_limit import rate_limit
 from db.db import db
 from flask import Blueprint, abort, jsonify, make_response
 from flask_jwt_extended import get_jwt_identity, jwt_required
@@ -12,6 +13,7 @@ user_bp = Blueprint('users', __name__, url_prefix='/api/v1/users')
 
 @user_bp.route('/<uuid:user_id>/roles/<uuid:role_id>', methods=['POST'])
 @jwt_required()
+@rate_limit
 def add_role_to_user(user_id, role_id):
     """Назначить пользователю роль.
     ---
@@ -47,6 +49,7 @@ def add_role_to_user(user_id, role_id):
 
 @user_bp.route('/<uuid:user_id>/roles/<uuid:role_id>', methods=['DELETE'])
 @jwt_required()
+@rate_limit
 def remove_role_from_user(user_id, role_id):
     """Отобрать у пользователя роль.
     ---
@@ -73,6 +76,7 @@ def remove_role_from_user(user_id, role_id):
 
 @user_bp.route('/<uuid:user_id>/roles/<uuid:role_id>', methods=['GET'])
 @jwt_required()
+@rate_limit
 def user_has_role(user_id, role_id):
     """Проверить наличие прав у пользователя.
     ---
