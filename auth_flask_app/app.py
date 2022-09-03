@@ -1,3 +1,6 @@
+from http import HTTPStatus
+
+from api.messages import message
 from api.v1.auth import auth
 from api.v1.ouath.google import oauth_google
 from api.v1.ouath.yandex import oauth_yandex
@@ -9,7 +12,7 @@ from core.swagger_config import swagger_config
 from db.db import db, init_db
 from extensions import jwt, ma, migrate, oauth
 from flasgger import Swagger
-from flask import Flask, request
+from flask import Flask, abort, jsonify, make_response, request
 from opentelemetry.instrumentation.flask import FlaskInstrumentor
 
 app = Flask(__name__)
@@ -33,7 +36,7 @@ FlaskInstrumentor().instrument_app(app)
 def before_request():
     request_id = request.headers.get('X-Request-Id')
     if not request_id:
-        raise RuntimeError('request id is required')
+        abort(make_response(jsonify(message=message('request_id_required')), HTTPStatus.BAD_REQUEST))
 
 
 def main():

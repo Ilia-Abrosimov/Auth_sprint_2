@@ -18,6 +18,7 @@ def message(key, variable_1=False, variable_2=False):
         'obj_exists': f'{variable_1} already exists.',
         'obj_not_update': f"{variable_1} can't be updated.",
         'obj_not_role': f'{variable_1} has no roles.',
-        'role_not_found': f'There is no role with name = {variable_1}'
+        'role_not_found': f'There is no role with name = {variable_1}',
+        'request_id_required': 'request id is required'
     }
     return messages.get(key)
