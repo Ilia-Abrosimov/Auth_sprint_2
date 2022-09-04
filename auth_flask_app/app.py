@@ -2,8 +2,8 @@ from http import HTTPStatus
 
 from api.messages import message
 from api.v1.auth import auth
-from api.v1.ouath.google import oauth_google
-from api.v1.ouath.yandex import oauth_yandex
+from api.v1.ouath.oauth_login import oauth_bp
+from api.v1.ouath.providers import oauth_google, oauth_yandex
 from api.v1.role import role_bp
 from api.v1.user import user_bp
 from cli.commands import cli_bp
@@ -25,6 +25,7 @@ oauth.init_app(app)
 app.register_blueprint(auth)
 app.register_blueprint(role_bp)
 app.register_blueprint(user_bp)
+app.register_blueprint(oauth_bp)
 app.register_blueprint(oauth_yandex)
 app.register_blueprint(oauth_google)
 app.register_blueprint(cli_bp)

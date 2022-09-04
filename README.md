@@ -51,7 +51,8 @@ python -m flask create superuser example@mail.com password
 ## Вход через OAuth
 Выполняется из dev сборки
 ````
-http://127.0.0.1:50/api/v1/oauth/yandex/login
+http://127.0.0.1/api/v1/oauth/yandex/login
+http://127.0.0.1/api/v1/oauth/google/login
 ````
 
 ## JAEGER UI 
