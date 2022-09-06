@@ -66,6 +66,8 @@ async def get_current_user(request: Request) -> UserAuthModel:
         raise UnauthorizedError
     if ret.status_code == HTTPStatus.NOT_FOUND:
         raise AuthResponseError
+    if ret.status_code == HTTPStatus.UNPROCESSABLE_ENTITY:
+        raise AuthResponseError(message='Access token error')
 
 
 async def get_admin(request: Request) -> UserAuthModel:
