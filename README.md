@@ -1,55 +1,62 @@
-## Ссылка на репозиторий
+## Description
+Authorization service is the third study module of Middle Python Developer course in Yandex Practicum.
 
-https://github.com/Ilia-Abrosimov/Auth_sprint_2
+The service is responsible for registration and authentication of users. Also, authentication is possible by OAuth (Google, Yandex).
+The ASync-API service uses the Auth service to validate the user's token.
 
-## Интеграция с другими сервисами
+- JWT token for authentication;
+- Redis is used to store invalid tokens;
+- Use gevent to improve performance of Flask;
+- Jaeger is used for request tracing along with requiest id from Nginx's;
+- To optimize data storage, the OAuth account table is partitioned by provider name field.
 
-Для создания сети `auth_network`
+
+## For integration with Async-API service
+
+Create network in docker `auth_network`
 
 ```bash
 docker network create auth_network
 ```
 
-## Запуск в режиме prod
+## Start in production mode
 
 ```bash
 make start_auth
 ```
 
-## Запуск в режиме dev
+## Start in development mode
 
 ```bash
 make start_auth_dev
 ```
 
-## Миграции
+## Migrations
 
-При первом запуске проекта (создании БД) необходимо накатить миграции.
-Из директрии с проектом необходимо выполнить следующее:
+At first time start need made migrations
 
 ```bash
 python -m flask db upgrade
 ```
 
-Для создания новой миграции необходимо выполнить
+For create new migrations
 ```bash
 python -m flask db migrate -m "<Migration messsage>"
 ```
 
-## Запуск тестов в dev сборке
+## Testing in development mode
 
 ```bash
 cd auth_flask_app && python -m pytest
 ```
 
-## Создание суперпользователя
-Для создания нового пользователя superuser можно воспользоваться cli-командой:
+## Create superuser
 
 ```bash
 python -m flask create superuser example@mail.com password
 ```
-## Вход через OAuth
-Выполняется из dev сборки
+## OAuth authorization and authentication
+Made from development mode
 ````
 http://127.0.0.1/api/v1/oauth/yandex/login
 http://127.0.0.1/api/v1/oauth/google/login
@@ -60,18 +67,12 @@ http://127.0.0.1/api/v1/oauth/google/login
 http://127.0.0.1:16686/
 ````
 
-## Документация 
+## API specification
 ````
 http://127.0.0.1:<port>/apidocs/
 ````
 
-# Проектная работа 7 спринта
-
-Упростите регистрацию и аутентификацию пользователей в Auth-сервисе, добавив вход через социальные сервисы. Список сервисов выбирайте исходя из целевой аудитории онлайн-кинотеатра — подумайте, какими социальными сервисами они пользуются. Например, использовать [OAuth от Github](https://docs.github.com/en/free-pro-team@latest/developers/apps/authorizing-oauth-apps){target="_blank"} — не самая удачная идея. Ваши пользователи не разработчики и вряд ли имеют аккаунт на Github. А вот добавить Twitter, Facebook, VK, Google, Yandex или Mail будет хорошей идеей.
-
-Вам не нужно делать фронтенд в этой задаче и реализовывать собственный сервер OAuth. Нужно реализовать протокол со стороны потребителя.
-
-Информация по OAuth у разных поставщиков данных:
+# Information about OAuth from different providers
 
 - [Twitter](https://developer.twitter.com/en/docs/authentication/overview){target="_blank"},
 - [Facebook](https://developers.facebook.com/docs/facebook-login/){target="_blank"},
@@ -80,8 +81,6 @@ http://127.0.0.1:<port>/apidocs/
 - [Yandex](https://yandex.ru/dev/oauth/?turbo=true){target="_blank"},
 - [Mail](https://api.mail.ru/docs/guides/oauth/){target="_blank"}.
 
-## Дополнительное задание
+## TODO
 
-Реализуйте возможность открепить аккаунт в соцсети от личного кабинета.
-
-Решение залейте в репозиторий текущего спринта и отправьте на ревью.
+Implement the ability to unlink your social network account from your personal account.
